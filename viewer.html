@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GGP Academy - Viewer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/tokyo-night-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Inter', sans-serif; }
+    body { background: radial-gradient(circle at 30% 50%, rgba(220,38,38,0.15), transparent 70%), radial-gradient(circle at 70% 70%, rgba(185,28,28,0.1), transparent 60%), #000; }
+    #content h1 { @apply text-4xl font-bold mb-4 mt-8; }
+    #content h2 { @apply text-3xl font-bold mb-3 mt-6; }
+    #content h3 { @apply text-2xl font-bold mb-2 mt-4; }
+    #content p { @apply mb-4 leading-relaxed; }
+    #content ul { @apply list-disc list-inside mb-4 space-y-2; }
+    #content ol { @apply list-decimal list-inside mb-4 space-y-2; }
+    #content code { @apply bg-zinc-800 px-2 py-1 rounded text-sm; }
+    #content pre { @apply bg-zinc-900 p-4 rounded-lg overflow-x-auto mb-4; }
+    #content pre code { @apply bg-transparent p-0; }
+    #content blockquote { @apply border-l-4 border-red-600 pl-4 italic text-zinc-400 my-4; }
+  </style>
+</head>
+<body class="text-white">
+  <header class="border-b border-zinc-800 bg-zinc-900/50 backdrop-blur-xl sticky top-0 z-50">
+    <div class="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center">
+      <a href="/dashboard.html" class="flex items-center gap-2 hover:text-red-500 transition">← 대시보드</a>
+      <button id="done" class="px-4 py-2 bg-green-700 hover:bg-green-600 rounded-lg transition">✅ 완료 표시</button>
+    </div>
+  </header>
+  <main class="max-w-5xl mx-auto px-6 py-8">
+    <div class="mb-6">
+      <h1 id="title" class="text-3xl font-bold mb-2"></h1>
+      <p id="info" class="text-zinc-400"></p>
+    </div>
+    <article id="content" class="prose prose-invert max-w-none bg-zinc-900/30 border border-zinc-800 rounded-xl p-8">
+      <div class="text-center py-12 text-zinc-400">문서를 불러오는 중...</div>
+    </article>
+    <nav class="mt-8 flex justify-between">
+      <a id="prev" href="#" class="px-6 py-3 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition hidden">← 이전</a>
+      <a id="next" href="#" class="px-6 py-3 bg-red-700 hover:bg-red-600 rounded-lg transition ml-auto hidden">다음 →</a>
+    </nav>
+  </main>
+  <script type="module">
+    import { requireAuth } from './js/auth.js';
+    import { loadAndRenderMarkdown } from './js/markdown.js';
+    import { markAsCompleted, updateLastVisited, isCompleted } from './js/progress.js';
+    import { getDocByPath, getNextDoc, getPrevDoc } from './js/curriculum.js';
+    requireAuth();
+    const params = new URLSearchParams(location.search);
+    const docPath = params.get('doc');
+    if (!docPath) {
+      document.getElementById('content').innerHTML = '<div class="text-red-300">문서 경로가 지정되지 않았습니다</div>';
+    } else {
+      const doc = getDocByPath(docPath);
+      if (doc) {
+        document.getElementById('title').textContent = doc.title;
+        document.getElementById('info').textContent = `${doc.chapterTitle} • ⏱️ ${doc.duration}`;
+        const prev = getPrevDoc(doc.id);
+        const next = getNextDoc(doc.id);
+        if (prev) {
+          document.getElementById('prev').href = `/viewer.html?doc=${prev.path}`;
+          document.getElementById('prev').textContent = `← ${prev.title}`;
+          document.getElementById('prev').classList.remove('hidden');
+        }
+        if (next) {
+          document.getElementById('next').href = `/viewer.html?doc=${next.path}`;
+          document.getElementById('next').textContent = `${next.title} →`;
+          document.getElementById('next').classList.remove('hidden');
+        }
+      }
+      loadAndRenderMarkdown(docPath, 'content');
+      updateLastVisited(docPath);
+      const doneBtn = document.getElementById('done');
+      if (isCompleted(docPath)) {
+        doneBtn.textContent = '✅ 완료됨';
+        doneBtn.classList.add('bg-zinc-700', 'cursor-default');
+        doneBtn.disabled = true;
+      }
+      doneBtn.onclick = () => {
+        markAsCompleted(docPath);
+        doneBtn.textContent = '✅ 완료됨';
+        doneBtn.classList.add('bg-zinc-700');
+        doneBtn.disabled = true;
+        alert('✅ 완료 처리되었습니다!');
+      };
+    }
+  </script>
+</body>
+</html>
