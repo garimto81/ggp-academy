@@ -17,7 +17,7 @@ const CURRICULUM_V2 = {
         {
           id: '1-1',
           title: '포커란 무엇인가',
-          path: 'step-1-poker-basics/1-1-what-is-poker',
+          path: 'curriculum/docs-new/step-1-poker-basics/1-1-what-is-poker.html',
           duration: '15분',
           description: 'WSOP, GGPoker, 텍사스 홀덤 기본 규칙',
           topics: ['WSOP 역사', 'GGPoker 성장', '패 랭킹', '방송 콘텐츠']

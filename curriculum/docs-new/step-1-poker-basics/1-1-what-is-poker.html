@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>1.1 포커란 무엇인가 | GGP Academy</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      font-family: 'Inter', sans-serif;
+      scroll-behavior: smooth;
+    }
+    body {
+      background: radial-gradient(circle at 30% 50%, rgba(220,38,38,0.15), transparent 70%),
+                  radial-gradient(circle at 70% 70%, rgba(185,28,28,0.1), transparent 60%),
+                  #000;
+    }
+
+    /* 카드 호버 효과 */
+    .card-hover {
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .card-hover:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(220, 38, 38, 0.3);
+    }
+
+    /* 패 랭킹 카드 애니메이션 */
+    .rank-card {
+      animation: fadeInUp 0.6s ease-out backwards;
+    }
+    .rank-card:nth-child(1) { animation-delay: 0.1s; }
+    .rank-card:nth-child(2) { animation-delay: 0.2s; }
+    .rank-card:nth-child(3) { animation-delay: 0.3s; }
+    .rank-card:nth-child(4) { animation-delay: 0.4s; }
+    .rank-card:nth-child(5) { animation-delay: 0.5s; }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* 진행 단계 타임라인 */
+    .timeline-item {
+      position: relative;
+      padding-left: 2rem;
+    }
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.5rem;
+      width: 1rem;
+      height: 1rem;
+      background: linear-gradient(135deg, #dc2626, #991b1b);
+      border-radius: 50%;
+      box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.2);
+    }
+    .timeline-item::after {
+      content: '';
+      position: absolute;
+      left: 0.45rem;
+      top: 1.5rem;
+      width: 2px;
+      height: calc(100% + 0.5rem);
+      background: linear-gradient(180deg, rgba(220, 38, 38, 0.5), transparent);
+    }
+    .timeline-item:last-child::after {
+      display: none;
+    }
+
+    /* 퀴즈 버튼 효과 */
+    .quiz-option {
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    .quiz-option:hover {
+      background: rgba(220, 38, 38, 0.1);
+      border-color: #dc2626;
+      transform: translateX(4px);
+    }
+    .quiz-option.correct {
+      background: rgba(34, 197, 94, 0.2);
+      border-color: #22c55e;
+    }
+    .quiz-option.wrong {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: #ef4444;
+    }
+
+    /* 카드 무늬 아이콘 */
+    .suit-icon {
+      display: inline-block;
+      font-size: 1.5rem;
+      margin: 0 0.25rem;
+    }
+    .suit-hearts, .suit-diamonds { color: #dc2626; }
+    .suit-spades, .suit-clubs { color: #fff; }
+
+    /* 글로우 효과 */
+    .glow-red {
+      box-shadow: 0 0 20px rgba(220, 38, 38, 0.4);
+    }
+
+    /* Glassmorphism */
+    .glass {
+      background: rgba(24, 24, 27, 0.6);
+      backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(63, 63, 70, 0.4);
+    }
+  </style>
+</head>
+<body class="text-white min-h-screen">
+
+  <!-- Hero Section -->
+  <div class="max-w-6xl mx-auto px-6 py-12">
+    <div class="glass rounded-2xl p-10 mb-8">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-12 h-12 bg-gradient-to-br from-red-600 to-red-800 rounded-xl flex items-center justify-center text-2xl">
+          🎰
+        </div>
+        <div>
+          <div class="text-sm text-zinc-400">Step 1 • Module 1</div>
+          <h1 class="text-4xl font-bold">포커란 무엇인가</h1>
+        </div>
+      </div>
+      <div class="flex gap-6 text-sm text-zinc-300 mt-4">
+        <div class="flex items-center gap-2">
+          <span>⏱️</span>
+          <span>15분</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span>📚</span>
+          <span>포커 기초 이론</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span>🎯</span>
+          <span>입문</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 학습 목표 -->
+    <div class="glass rounded-2xl p-8 mb-8 border-l-4 border-red-600">
+      <h2 class="text-2xl font-bold mb-4 flex items-center gap-2">
+        <span>🎯</span>
+        <span>학습 목표</span>
+      </h2>
+      <ul class="space-y-2 text-zinc-300">
+        <li class="flex items-start gap-2">
+          <span class="text-red-500 mt-1">▸</span>
+          <span>포커의 역사와 WSOP의 위상을 이해한다</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-red-500 mt-1">▸</span>
+          <span>GGPoker의 글로벌 성장 과정을 파악한다</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-red-500 mt-1">▸</span>
+          <span>텍사스 홀덤의 기본 규칙과 진행 방식을 배운다</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-red-500 mt-1">▸</span>
+          <span>포커가 왜 매력적인 방송 콘텐츠인지 이해한다</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- 포커의 역사 -->
+    <section class="mb-12">
+      <h2 class="text-3xl font-bold mb-6 flex items-center gap-3">
+        <span class="text-4xl">🏛️</span>
+        <span>포커의 역사</span>
+      </h2>
+
+      <div class="grid md:grid-cols-2 gap-6">
+        <!-- WSOP 카드 -->
+        <div class="glass rounded-2xl p-8 card-hover">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-14 h-14 bg-gradient-to-br from-yellow-600 to-yellow-800 rounded-xl flex items-center justify-center text-2xl">
+              🏆
+            </div>
+            <div>
+              <h3 class="text-2xl font-bold">WSOP</h3>
+              <p class="text-sm text-zinc-400">World Series of Poker</p>
+            </div>
+          </div>
+
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-zinc-400">설립</span>
+              <span class="font-semibold text-yellow-400">1970년, 라스베이가스</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-zinc-400">의미</span>
+              <span class="font-semibold">포커의 올림픽</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-zinc-400">규모</span>
+              <span class="font-semibold">50+ 이벤트/년</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-zinc-400">참가자</span>
+              <span class="font-semibold text-red-400">10,000+</span>
+            </div>
+            <div class="border-t border-zinc-700 pt-3 mt-3">
+              <div class="text-center">
+                <div class="text-sm text-zinc-400 mb-1">메인 이벤트 우승 상금</div>
+                <div class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
+                  $8-10M
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- GGPoker 카드 -->
+        <div class="glass rounded-2xl p-8 card-hover glow-red">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-14 h-14 bg-gradient-to-br from-red-600 to-red-800 rounded-xl flex items-center justify-center text-2xl">
+              🚀
+            </div>
+            <div>
+              <h3 class="text-2xl font-bold">GGPoker</h3>
+              <p class="text-sm text-zinc-400">글로벌 성장 스토리</p>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <div class="timeline-item">
+              <div class="font-semibold text-lg">2014년</div>
+              <div class="text-zinc-400">플랫폼 설립</div>
+            </div>
+            <div class="timeline-item">
+              <div class="font-semibold text-lg">2020년</div>
+              <div class="text-zinc-400">WSOP 온라인 독점 파트너십 체결</div>
+            </div>
+            <div class="timeline-item">
+              <div class="font-semibold text-lg text-red-400">2021년</div>
+              <div class="text-red-400 font-semibold">온라인 포커 플랫폼 세계 1위 달성 🌍</div>
+            </div>
+            <div class="timeline-item">
+              <div class="font-semibold text-lg">현재</div>
+              <div class="text-zinc-400">연간 사용자 <span class="text-white font-semibold">수백만 명</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 텍사스 홀덤 기본 규칙 -->
+    <section class="mb-12">
+      <h2 class="text-3xl font-bold mb-6 flex items-center gap-3">
+        <span class="text-4xl">🃏</span>
+        <span>텍사스 홀덤 기본 규칙</span>
+      </h2>
+
+      <!-- 게임 목표 -->
+      <div class="glass rounded-2xl p-8 mb-6 border-l-4 border-blue-600">
+        <div class="text-xl font-bold mb-2">🎯 게임 목표</div>
+        <div class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
+          가장 강한 5장의 카드 조합을 만들어 팟(Pot)을 획득
+        </div>
+      </div>
+
+      <!-- 카드 구성 -->
+      <div class="grid md:grid-cols-3 gap-6 mb-6">
+        <div class="glass rounded-xl p-6 text-center card-hover">
+          <div class="text-5xl mb-3">🎴</div>
+          <div class="font-bold text-lg mb-2">홀 카드</div>
+          <div class="text-3xl font-bold text-red-400 mb-2">2장</div>
+          <div class="text-sm text-zinc-400">각 플레이어에게 (비공개)</div>
+        </div>
+
+        <div class="glass rounded-xl p-6 text-center card-hover">
+          <div class="text-5xl mb-3">🎰</div>
+          <div class="font-bold text-lg mb-2">커뮤니티 카드</div>
+          <div class="text-3xl font-bold text-blue-400 mb-2">5장</div>
+          <div class="text-sm text-zinc-400">테이블 중앙 (공개)</div>
+        </div>
+
+        <div class="glass rounded-xl p-6 text-center card-hover">
+          <div class="text-5xl mb-3">🏆</div>
+          <div class="font-bold text-lg mb-2">최종 패</div>
+          <div class="text-3xl font-bold text-yellow-400 mb-2">5장</div>
+          <div class="text-sm text-zinc-400">7장 중 최고 조합</div>
+        </div>
+      </div>
+
+      <!-- 게임 진행 -->
+      <div class="glass rounded-2xl p-8">
+        <h3 class="text-2xl font-bold mb-6">게임 진행 단계</h3>
+        <div class="space-y-4">
+          <div class="flex items-start gap-4 p-4 bg-zinc-800/50 rounded-xl">
+            <div class="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center font-bold flex-shrink-0">1</div>
+            <div>
+              <div class="font-bold text-lg">프리플랍 (Pre-flop)</div>
+              <div class="text-zinc-400">홀 카드 2장 배분 → 첫 베팅 라운드</div>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-4 p-4 bg-zinc-800/50 rounded-xl">
+            <div class="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center font-bold flex-shrink-0">2</div>
+            <div>
+              <div class="font-bold text-lg">플랍 (Flop)</div>
+              <div class="text-zinc-400">커뮤니티 카드 3장 공개 → 두 번째 베팅 라운드</div>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-4 p-4 bg-zinc-800/50 rounded-xl">
+            <div class="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center font-bold flex-shrink-0">3</div>
+            <div>
+              <div class="font-bold text-lg">턴 (Turn)</div>
+              <div class="text-zinc-400">커뮤니티 카드 1장 추가 (총 4장) → 세 번째 베팅 라운드</div>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-4 p-4 bg-zinc-800/50 rounded-xl">
+            <div class="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center font-bold flex-shrink-0">4</div>
+            <div>
+              <div class="font-bold text-lg">리버 (River)</div>
+              <div class="text-zinc-400">커뮤니티 카드 1장 추가 (총 5장) → 마지막 베팅 라운드</div>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-4 p-4 bg-gradient-to-r from-yellow-900/30 to-yellow-800/30 rounded-xl border border-yellow-600/50">
+            <div class="w-10 h-10 bg-yellow-600 rounded-full flex items-center justify-center font-bold flex-shrink-0">5</div>
+            <div>
+              <div class="font-bold text-lg">쇼다운 (Showdown)</div>
+              <div class="text-zinc-400">최종 패 비교 → 승자 결정!</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 패 랭킹 -->
+    <section class="mb-12">
+      <h2 class="text-3xl font-bold mb-6 flex items-center gap-3">
+        <span class="text-4xl">🏆</span>
+        <span>패 랭킹 (강한 순서)</span>
+      </h2>
+
+      <div class="grid md:grid-cols-2 gap-4">
+        <!-- Top 5 패 -->
+        <div class="rank-card glass rounded-xl p-6 border-2 border-yellow-600 glow-red">
+          <div class="flex items-center justify-between mb-2">
+            <div class="text-2xl font-bold">1. 로얄 플러시</div>
+            <div class="text-3xl">👑</div>
+          </div>
+          <div class="text-zinc-400 mb-3">Royal Flush</div>
+          <div class="bg-zinc-800 rounded-lg p-4 font-mono text-xl text-center">
+            A<span class="suit-icon suit-hearts">♥</span>
+            K<span class="suit-icon suit-hearts">♥</span>
+            Q<span class="suit-icon suit-hearts">♥</span>
+            J<span class="suit-icon suit-hearts">♥</span>
+            10<span class="suit-icon suit-hearts">♥</span>
+          </div>
+          <div class="text-sm text-zinc-500 mt-2">같은 무늬의 A-K-Q-J-10</div>
+        </div>
+
+        <div class="rank-card glass rounded-xl p-6 border border-zinc-700">
+          <div class="flex items-center justify-between mb-2">
+            <div class="text-2xl font-bold">2. 스트레이트 플러시</div>
+            <div class="text-3xl">💎</div>
+          </div>
+          <div class="text-zinc-400 mb-3">Straight Flush</div>
+          <div class="bg-zinc-800 rounded-lg p-4 font-mono text-xl text-center">
+            9<span class="suit-icon suit-spades">♠</span>
+            8<span class="suit-icon suit-spades">♠</span>
+            7<span class="suit-icon suit-spades">♠</span>
+            6<span class="suit-icon suit-spades">♠</span>
+            5<span class="suit-icon suit-spades">♠</span>
+          </div>
+          <div class="text-sm text-zinc-500 mt-2">연속된 숫자 + 같은 무늬</div>
+        </div>
+
+        <div class="rank-card glass rounded-xl p-6 border border-zinc-700">
+          <div class="flex items-center justify-between mb-2">
+            <div class="text-2xl font-bold">3. 포 카드</div>
+            <div class="text-3xl">🎯</div>
+          </div>
+          <div class="text-zinc-400 mb-3">Four of a Kind</div>
+          <div class="bg-zinc-800 rounded-lg p-4 font-mono text-xl text-center">
+            A<span class="suit-icon suit-hearts">♥</span>
+            A<span class="suit-icon suit-spades">♠</span>
+            A<span class="suit-icon suit-diamonds">♦</span>
+            A<span class="suit-icon suit-clubs">♣</span>
+            K<span class="suit-icon suit-hearts">♥</span>
+          </div>
+          <div class="text-sm text-zinc-500 mt-2">같은 숫자 4장</div>
+        </div>
+
+        <div class="rank-card glass rounded-xl p-6 border border-zinc-700">
+          <div class="flex items-center justify-between mb-2">
+            <div class="text-2xl font-bold">4. 풀 하우스</div>
+            <div class="text-3xl">🏠</div>
+          </div>
+          <div class="text-zinc-400 mb-3">Full House</div>
+          <div class="bg-zinc-800 rounded-lg p-4 font-mono text-xl text-center">
+            K<span class="suit-icon suit-hearts">♥</span>
+            K<span class="suit-icon suit-spades">♠</span>
+            K<span class="suit-icon suit-diamonds">♦</span>
+            9<span class="suit-icon suit-clubs">♣</span>
+            9<span class="suit-icon suit-hearts">♥</span>
+          </div>
+          <div class="text-sm text-zinc-500 mt-2">트리플(3장) + 페어(2장)</div>
+        </div>
+
+        <div class="rank-card glass rounded-xl p-6 border border-zinc-700">
+          <div class="flex items-center justify-between mb-2">
+            <div class="text-2xl font-bold">5. 플러시</div>
+            <div class="text-3xl">✨</div>
+          </div>
+          <div class="text-zinc-400 mb-3">Flush</div>
+          <div class="bg-zinc-800 rounded-lg p-4 font-mono text-xl text-center">
+            A<span class="suit-icon suit-diamonds">♦</span>
+            J<span class="suit-icon suit-diamonds">♦</span>
+            9<span class="suit-icon suit-diamonds">♦</span>
+            5<span class="suit-icon suit-diamonds">♦</span>
+            3<span class="suit-icon suit-diamonds">♦</span>
+          </div>
+          <div class="text-sm text-zinc-500 mt-2">같은 무늬 5장 (숫자 무관)</div>
+        </div>
+
+        <!-- 나머지 5개 패는 접기/펼치기 -->
+        <div class="md:col-span-2">
+          <button onclick="toggleMoreRanks()" class="w-full glass rounded-xl p-4 hover:bg-zinc-800/50 transition">
+            <div class="flex items-center justify-between">
+              <span class="font-semibold">나머지 5개 패 보기</span>
+              <span id="toggleIcon">▼</span>
+            </div>
+          </button>
+
+          <div id="moreRanks" class="hidden grid md:grid-cols-2 gap-4 mt-4">
+            <div class="glass rounded-xl p-6 border border-zinc-700">
+              <div class="flex items-center justify-between mb-2">
+                <div class="text-xl font-bold">6. 스트레이트</div>
+                <div class="text-2xl">📐</div>
+              </div>
+              <div class="text-zinc-400 mb-3">Straight</div>
+              <div class="bg-zinc-800 rounded-lg p-3 font-mono text-center">
+                9<span class="suit-icon suit-hearts">♥</span>
+                8<span class="suit-icon suit-clubs">♣</span>
+                7<span class="suit-icon suit-diamonds">♦</span>
+                6<span class="suit-icon suit-spades">♠</span>
+                5<span class="suit-icon suit-hearts">♥</span>
+              </div>
+              <div class="text-sm text-zinc-500 mt-2">연속된 숫자 5장</div>
+            </div>
+
+            <div class="glass rounded-xl p-6 border border-zinc-700">
+              <div class="flex items-center justify-between mb-2">
+                <div class="text-xl font-bold">7. 트리플</div>
+                <div class="text-2xl">🎲</div>
+              </div>
+              <div class="text-zinc-400 mb-3">Three of a Kind</div>
+              <div class="bg-zinc-800 rounded-lg p-3 font-mono text-center">
+                Q<span class="suit-icon suit-hearts">♥</span>
+                Q<span class="suit-icon suit-spades">♠</span>
+                Q<span class="suit-icon suit-diamonds">♦</span>
+                7<span class="suit-icon suit-clubs">♣</span>
+                4<span class="suit-icon suit-hearts">♥</span>
+              </div>
+              <div class="text-sm text-zinc-500 mt-2">같은 숫자 3장</div>
+            </div>
+
+            <div class="glass rounded-xl p-6 border border-zinc-700">
+              <div class="flex items-center justify-between mb-2">
+                <div class="text-xl font-bold">8. 투 페어</div>
+                <div class="text-2xl">👥</div>
+              </div>
+              <div class="text-zinc-400 mb-3">Two Pair</div>
+              <div class="bg-zinc-800 rounded-lg p-3 font-mono text-center">
+                J<span class="suit-icon suit-hearts">♥</span>
+                J<span class="suit-icon suit-spades">♠</span>
+                8<span class="suit-icon suit-diamonds">♦</span>
+                8<span class="suit-icon suit-clubs">♣</span>
+                3<span class="suit-icon suit-hearts">♥</span>
+              </div>
+              <div class="text-sm text-zinc-500 mt-2">페어 2개</div>
+            </div>
+
+            <div class="glass rounded-xl p-6 border border-zinc-700">
+              <div class="flex items-center justify-between mb-2">
+                <div class="text-xl font-bold">9. 원 페어</div>
+                <div class="text-2xl">👤</div>
+              </div>
+              <div class="text-zinc-400 mb-3">One Pair</div>
+              <div class="bg-zinc-800 rounded-lg p-3 font-mono text-center">
+                10<span class="suit-icon suit-hearts">♥</span>
+                10<span class="suit-icon suit-clubs">♣</span>
+                K<span class="suit-icon suit-diamonds">♦</span>
+                7<span class="suit-icon suit-spades">♠</span>
+                4<span class="suit-icon suit-hearts">♥</span>
+              </div>
+              <div class="text-sm text-zinc-500 mt-2">같은 숫자 2장</div>
+            </div>
+
+            <div class="md:col-span-2 glass rounded-xl p-6 border border-zinc-700">
+              <div class="flex items-center justify-between mb-2">
+                <div class="text-xl font-bold">10. 하이 카드</div>
+                <div class="text-2xl">🎴</div>
+              </div>
+              <div class="text-zinc-400 mb-3">High Card</div>
+              <div class="bg-zinc-800 rounded-lg p-3 font-mono text-center">
+                A<span class="suit-icon suit-hearts">♥</span>
+                J<span class="suit-icon suit-clubs">♣</span>
+                9<span class="suit-icon suit-diamonds">♦</span>
+                5<span class="suit-icon suit-spades">♠</span>
+                3<span class="suit-icon suit-hearts">♥</span>
+              </div>
+              <div class="text-sm text-zinc-500 mt-2">위의 조합이 하나도 없을 때, 가장 높은 카드로 승부</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 왜 포커는 방송 콘텐츠인가 -->
+    <section class="mb-12">
+      <h2 class="text-3xl font-bold mb-6 flex items-center gap-3">
+        <span class="text-4xl">🎬</span>
+        <span>왜 포커는 방송 콘텐츠인가?</span>
+      </h2>
+
+      <div class="grid md:grid-cols-2 gap-6 mb-8">
+        <div class="glass rounded-xl p-8 card-hover">
+          <div class="text-4xl mb-4">🎭</div>
+          <h3 class="text-2xl font-bold mb-4">드라마의 요소</h3>
+          <ul class="space-y-3">
+            <li class="flex items-start gap-3">
+              <span class="text-2xl">🧠</span>
+              <div>
+                <div class="font-semibold">심리전</div>
+                <div class="text-sm text-zinc-400">블러프와 텔(Tell) 읽기</div>
+              </div>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="text-2xl">🎲</span>
+              <div>
+                <div class="font-semibold">운과 실력</div>
+                <div class="text-sm text-zinc-400">확률 계산 + 의사결정</div>
+              </div>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="text-2xl">⚡</span>
+              <div>
+                <div class="font-semibold">극적인 역전</div>
+                <div class="text-sm text-zinc-400">한 장의 카드로 바뀌는 운명</div>
+              </div>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="text-2xl">💰</span>
+              <div>
+                <div class="font-semibold">고액의 베팅</div>
+                <div class="text-sm text-zinc-400">수십억 원이 오가는 긴장감</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="glass rounded-xl p-8 card-hover">
+          <div class="text-4xl mb-4">⭐</div>
+          <h3 class="text-2xl font-bold mb-4">스타 플레이어</h3>
+          <div class="space-y-4">
+            <div class="bg-zinc-800/50 rounded-lg p-4">
+              <div class="flex items-center gap-3 mb-2">
+                <div class="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center font-bold">PI</div>
+                <div>
+                  <div class="font-bold">Phil Ivey</div>
+                  <div class="text-sm text-zinc-400">10개의 WSOP 브레이슬릿</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-zinc-800/50 rounded-lg p-4 border border-red-600/50">
+              <div class="flex items-center gap-3 mb-2">
+                <div class="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center font-bold">DN</div>
+                <div>
+                  <div class="font-bold">Daniel Negreanu</div>
+                  <div class="text-sm text-zinc-400">GGPoker 앰버서더 🇨🇦</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-zinc-800/50 rounded-lg p-4">
+              <div class="flex items-center gap-3 mb-2">
+                <div class="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center font-bold">BK</div>
+                <div>
+                  <div class="font-bold">Bryn Kenney</div>
+                  <div class="text-sm text-zinc-400">토너먼트 상금 1위 ($65M+)</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GG Production의 역할 -->
+      <div class="glass rounded-2xl p-10 text-center border-2 border-red-600 glow-red">
+        <div class="text-5xl mb-4">🎥</div>
+        <h3 class="text-3xl font-bold mb-4">GG Production의 역할</h3>
+        <div class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-red-600 mb-3">
+          세계 최고 수준의 포커 방송을 제작하여 전 세계에 전달
+        </div>
+        <div class="text-zinc-400">
+          우리는 단순한 게임 중계를 넘어, 포커의 드라마와 스토리를 전달하는 콘텐츠 크리에이터입니다
+        </div>
+      </div>
+    </section>
+
+    <!-- 인터랙티브 퀴즈 -->
+    <section class="mb-12">
+      <h2 class="text-3xl font-bold mb-6 flex items-center gap-3">
+        <span class="text-4xl">✅</span>
+        <span>학습 점검 퀴즈</span>
+      </h2>
+
+      <div class="space-y-6">
+        <!-- 퀴즈 1 -->
+        <div class="glass rounded-xl p-6">
+          <div class="font-bold text-lg mb-4">Q1. WSOP는 언제 설립되었나요?</div>
+          <div class="space-y-2">
+            <button class="quiz-option w-full text-left p-4 rounded-lg border border-zinc-700" onclick="checkAnswer(this, false)">
+              A) 1960년
+            </button>
+            <button class="quiz-option w-full text-left p-4 rounded-lg border border-zinc-700" onclick="checkAnswer(this, true)">
+              B) 1970년
+            </button>
+            <button class="quiz-option w-full text-left p-4 rounded-lg border border-zinc-700" onclick="checkAnswer(this, false)">
+              C) 1980년
+            </button>
+            <button class="quiz-option w-full text-left p-4 rounded-lg border border-zinc-700" onclick="checkAnswer(this, false)">
+              D) 1990년
+            </button>
+          </div>
+        </div>
+
+        <!-- 퀴즈 2 -->
+        <div class="glass rounded-xl p-6">
+          <div class="font-bold text-lg mb-4">Q2. 텍사스 홀덤에서 각 플레이어에게 몇 장의 홀 카드가 배분되나요?</div>
+          <div class="space-y-2">
+            <button class="quiz-option w-full text-left p-4 rounded-lg border border-zinc-700" onclick="checkAnswer(this, false)">
+              A) 1장
+            </button>
+            <button class="quiz-option w-full text-left p-4 rounded-lg border border-zinc-700" onclick="checkAnswer(this, true)">
+              B) 2장
+            </button>
+            <button class="quiz-option w-full text-left p-4 rounded-lg border border-zinc-700" onclick="checkAnswer(this, false)">
+              C) 3장
+            </button>
+            <button class="quiz-option w-full text-left p-4 rounded-lg border border-zinc-700" onclick="checkAnswer(this, false)">
+              D) 4장
+            </button>
+          </div>
+        </div>
+
+        <!-- 퀴즈 3 -->
+        <div class="glass rounded-xl p-6">
+          <div class="font-bold text-lg mb-4">Q3. 가장 강한 패는 무엇인가요?</div>
+          <div class="space-y-2">
+            <button class="quiz-option w-full text-left p-4 rounded-lg border border-zinc-700" onclick="checkAnswer(this, false)">
+              A) 스트레이트 플러시
+            </button>
+            <button class="quiz-option w-full text-left p-4 rounded-lg border border-zinc-700" onclick="checkAnswer(this, true)">
+              B) 로얄 플러시
+            </button>
+            <button class="quiz-option w-full text-left p-4 rounded-lg border border-zinc-700" onclick="checkAnswer(this, false)">
+              C) 포 카드
+            </button>
+            <button class="quiz-option w-full text-left p-4 rounded-lg border border-zinc-700" onclick="checkAnswer(this, false)">
+              D) 풀 하우스
+            </button>
+          </div>
+        </div>
+
+        <!-- 퀴즈 4 -->
+        <div class="glass rounded-xl p-6">
+          <div class="font-bold text-lg mb-4">Q4. GGPoker는 몇 년에 온라인 포커 플랫폼 세계 1위가 되었나요?</div>
+          <div class="space-y-2">
+            <button class="quiz-option w-full text-left p-4 rounded-lg border border-zinc-700" onclick="checkAnswer(this, false)">
+              A) 2014년
+            </button>
+            <button class="quiz-option w-full text-left p-4 rounded-lg border border-zinc-700" onclick="checkAnswer(this, false)">
+              C) 2020년
+            </button>
+            <button class="quiz-option w-full text-left p-4 rounded-lg border border-zinc-700" onclick="checkAnswer(this, true)">
+              D) 2021년
+            </button>
+            <button class="quiz-option w-full text-left p-4 rounded-lg border border-zinc-700" onclick="checkAnswer(this, false)">
+              E) 2023년
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 퀴즈 결과 -->
+      <div id="quizResult" class="hidden mt-6 glass rounded-xl p-8 text-center border-2 border-green-600">
+        <div class="text-5xl mb-4">🎉</div>
+        <div class="text-2xl font-bold mb-2">훌륭합니다!</div>
+        <div class="text-zinc-400">모든 문제를 맞추셨네요. 다음 모듈로 진행하세요!</div>
+      </div>
+    </section>
+
+    <!-- 다음 단계 -->
+    <div class="glass rounded-2xl p-8 text-center">
+      <div class="text-zinc-400 mb-4">다음 모듈</div>
+      <a href="/ggp-academy/viewer.html?doc=curriculum/docs-new/step-1-poker-basics/1-2-poker-glossary.md"
+         class="inline-block px-8 py-4 bg-gradient-to-r from-red-600 to-red-700 rounded-xl font-bold text-lg hover:from-red-500 hover:to-red-600 transition">
+        1.2 포커 용어 사전 →
+      </a>
+    </div>
+  </div>
+
+  <script>
+    // 패 랭킹 토글
+    function toggleMoreRanks() {
+      const moreRanks = document.getElementById('moreRanks');
+      const icon = document.getElementById('toggleIcon');
+
+      if (moreRanks.classList.contains('hidden')) {
+        moreRanks.classList.remove('hidden');
+        icon.textContent = '▲';
+      } else {
+        moreRanks.classList.add('hidden');
+        icon.textContent = '▼';
+      }
+    }
+
+    // 퀴즈 체크
+    let correctAnswers = 0;
+    const totalQuestions = 4;
+
+    function checkAnswer(button, isCorrect) {
+      // 이미 답변한 문제인지 확인
+      const parent = button.parentElement;
+      const answered = parent.querySelector('.correct, .wrong');
+      if (answered) return;
+
+      // 모든 버튼 비활성화
+      const buttons = parent.querySelectorAll('.quiz-option');
+      buttons.forEach(btn => btn.style.pointerEvents = 'none');
+
+      if (isCorrect) {
+        button.classList.add('correct');
+        correctAnswers++;
+
+        // 모든 문제를 맞췄는지 확인
+        if (correctAnswers === totalQuestions) {
+          setTimeout(() => {
+            document.getElementById('quizResult').classList.remove('hidden');
+            document.getElementById('quizResult').scrollIntoView({ behavior: 'smooth' });
+          }, 500);
+        }
+      } else {
+        button.classList.add('wrong');
+        // 정답 표시
+        buttons.forEach(btn => {
+          if (btn.onclick.toString().includes('true')) {
+            setTimeout(() => btn.classList.add('correct'), 300);
+          }
+        });
+      }
+    }
+  </script>
+</body>
+</html>
