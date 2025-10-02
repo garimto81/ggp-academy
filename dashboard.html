@@ -53,7 +53,7 @@
   <script type="module">
     import { requireAuth, logout } from './js/auth.js';
     import { loadProgress, calculateProgressPercentage, getStudyStats, isCompleted } from './js/progress.js';
-    import { CURRICULUM_DATA, getTotalDocCount } from './js/curriculum.js';
+    import { CURRICULUM_DATA, getTotalDocCount } from './js/curriculum-old.js';
     requireAuth();
     document.getElementById('logout').onclick = logout;
     const stats = getStudyStats();
