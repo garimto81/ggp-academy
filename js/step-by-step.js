@@ -35,8 +35,13 @@ class StepByStepModule {
 
   async loadMarkdown(path) {
     try {
-      // .md 확장자 추가
-      const mdPath = `/ggp-academy/${path}.md`;
+      // 1. 확장자 제거 (안전한 정규화)
+      const cleanPath = path
+        .replace(/\.html$/, '')   // .html 제거
+        .replace(/\.md$/, '');     // .md 제거
+
+      // 2. .md 파일 로드
+      const mdPath = `/ggp-academy/${cleanPath}.md`;
       const response = await fetch(mdPath);
 
       if (!response.ok) {
