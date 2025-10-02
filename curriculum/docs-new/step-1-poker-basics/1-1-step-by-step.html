@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>1.1 포커란 무엇인가 | GGP Academy</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      font-family: 'Inter', sans-serif;
+      scroll-behavior: smooth;
+    }
+    body {
+      background: radial-gradient(circle at 30% 50%, rgba(220,38,38,0.15), transparent 70%),
+                  radial-gradient(circle at 70% 70%, rgba(185,28,28,0.1), transparent 60%),
+                  #000;
+    }
+
+    .progress-fill {
+      transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .step-content {
+      animation: fadeInUp 0.5s ease-out;
+    }
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .card-hover {
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .card-hover:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(220, 38, 38, 0.3);
+    }
+
+    .timeline-item {
+      position: relative;
+      padding-left: 2rem;
+    }
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.5rem;
+      width: 1rem;
+      height: 1rem;
+      background: linear-gradient(135deg, #dc2626, #991b1b);
+      border-radius: 50%;
+      box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.2);
+    }
+    .timeline-item::after {
+      content: '';
+      position: absolute;
+      left: 0.45rem;
+      top: 1.5rem;
+      width: 2px;
+      height: calc(100% + 0.5rem);
+      background: linear-gradient(180deg, rgba(220, 38, 38, 0.5), transparent);
+    }
+    .timeline-item:last-child::after {
+      display: none;
+    }
+
+    .quiz-option {
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    .quiz-option:hover:not(.correct):not(.wrong) {
+      background: rgba(220, 38, 38, 0.1);
+      border-color: #dc2626;
+      transform: translateX(4px);
+    }
+    .quiz-option.correct {
+      background: rgba(34, 197, 94, 0.2);
+      border-color: #22c55e;
+    }
+    .quiz-option.wrong {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: #ef4444;
+    }
+
+    .suit-icon {
+      display: inline-block;
+      font-size: 1.5rem;
+      margin: 0 0.25rem;
+    }
+    .suit-hearts, .suit-diamonds { color: #dc2626; }
+    .suit-spades, .suit-clubs { color: #fff; }
+
+    .glass {
+      background: rgba(24, 24, 27, 0.6);
+      backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(63, 63, 70, 0.4);
+    }
+
+    .step-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      transition: all 0.3s ease;
+    }
+    .step-dot.active {
+      width: 32px;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body class="text-white min-h-screen">
+
+  <!-- Progress Bar -->
+  <div class="sticky top-0 z-50 glass">
+    <div class="max-w-4xl mx-auto px-6 py-4">
+      <div class="flex items-center justify-between mb-3">
+        <a href="/ggp-academy/dashboard.html" class="text-zinc-400 hover:text-white transition">← 대시보드</a>
+        <div class="text-sm text-zinc-400"><span id="currentStepNum">1</span> / 5 단계</div>
+      </div>
+      <div class="w-full bg-zinc-800 rounded-full h-2 overflow-hidden">
+        <div id="progressBar" class="progress-fill h-full bg-gradient-to-r from-red-600 to-red-500" style="width: 20%"></div>
+      </div>
+      <div class="flex items-center justify-center gap-2 mt-4">
+        <div class="step-dot bg-red-600 active"></div>
+        <div class="step-dot bg-zinc-600"></div>
+        <div class="step-dot bg-zinc-600"></div>
+        <div class="step-dot bg-zinc-600"></div>
+        <div class="step-dot bg-zinc-600"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <!-- Steps will be dynamically shown/hidden -->
+  </div>
+
+  <script>
+    // Will be implemented
+  </script>
+</body>
+</html>
