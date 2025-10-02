@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GGP Academy - 단일 스크롤 학습</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/ggp-academy/css/module-interactive.css">
+
+  <style>
+    * {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: #0a0a0a;
+      background-image:
+        radial-gradient(at 0% 0%, rgba(220, 38, 38, 0.08) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(239, 68, 68, 0.05) 0px, transparent 50%);
+    }
+
+    /* Fixed Header */
+    .academy-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(10, 10, 10, 0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(63, 63, 70, 0.4);
+    }
+
+    /* Progress Bar */
+    .progress-container {
+      height: 4px;
+      background: #18181b;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #dc2626, #ef4444);
+      transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+
+    .progress-fill::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    /* Sticky Step Header */
+    .step-header {
+      position: sticky;
+      top: 72px;
+      z-index: 50;
+      background: rgba(24, 24, 27, 0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(63, 63, 70, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .step-header.active {
+      background: rgba(220, 38, 38, 0.1);
+      border-bottom-color: rgba(220, 38, 38, 0.5);
+    }
+
+    /* Module Card States */
+    .module-card {
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid rgba(63, 63, 70, 0.4);
+      background: rgba(24, 24, 27, 0.6);
+    }
+
+    .module-card.completed {
+      border-color: rgba(34, 197, 94, 0.3);
+      background: rgba(34, 197, 94, 0.05);
+    }
+
+    .module-card.active {
+      border-color: rgba(220, 38, 38, 0.5);
+      background: rgba(24, 24, 27, 0.8);
+      box-shadow: 0 0 40px rgba(220, 38, 38, 0.2);
+    }
+
+    .module-card.locked {
+      opacity: 0.5;
+      filter: grayscale(0.5);
+    }
+
+    /* Module Content Expansion */
+    .module-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .module-content.expanded {
+      max-height: 10000px;
+    }
+
+    /* Module Header Clickable */
+    .module-header {
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .module-header:hover {
+      background: rgba(63, 63, 70, 0.2);
+    }
+
+    /* Complete Button */
+    .complete-btn {
+      background: linear-gradient(135deg, #dc2626, #b91c1c);
+      transition: all 0.3s ease;
+    }
+
+    .complete-btn:hover {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px rgba(220, 38, 38, 0.4);
+    }
+
+    /* Badge Styles */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .badge-completed { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+    .badge-active { background: rgba(220, 38, 38, 0.2); color: #dc2626; }
+    .badge-locked { background: rgba(161, 161, 170, 0.2); color: #a1a1aa; }
+
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      right: 24px;
+      top: 120px;
+      width: 240px;
+      max-height: calc(100vh - 140px);
+      overflow-y: auto;
+      background: rgba(24, 24, 27, 0.8);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(63, 63, 70, 0.4);
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .sidebar::-webkit-scrollbar { width: 4px; }
+    .sidebar::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 2px; }
+
+    .minimap-item {
+      padding: 8px 12px;
+      margin-bottom: 4px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 13px;
+    }
+
+    .minimap-item:hover {
+      background: rgba(63, 63, 70, 0.4);
+    }
+
+    .minimap-item.completed { border-left: 3px solid #22c55e; }
+    .minimap-item.active { border-left: 3px solid #dc2626; background: rgba(220, 38, 38, 0.1); }
+
+    /* Responsive */
+    @media (max-width: 1280px) {
+      .sidebar { display: none; }
+    }
+
+    /* Search Input */
+    .search-input {
+      background: rgba(39, 39, 42, 0.6);
+      border: 1px solid rgba(63, 63, 70, 0.4);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 8px;
+      width: 300px;
+      transition: all 0.2s ease;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: rgba(220, 38, 38, 0.5);
+      background: rgba(39, 39, 42, 0.8);
+    }
+
+    .search-input::placeholder {
+      color: rgba(161, 161, 170, 0.6);
+    }
+  </style>
+</head>
+
+<body class="text-white">
+
+  <!-- Fixed Header: 전체 진도율 + 검색 -->
+  <header class="academy-header">
+    <div class="max-w-6xl mx-auto px-6 py-4">
+      <div class="flex items-center justify-between mb-2">
+        <div class="flex items-center gap-4">
+          <h1 class="text-xl font-bold">🎓 GGP Academy</h1>
+          <div class="text-sm text-zinc-400">
+            전체 진도: <span id="overall-progress-text" class="text-white font-semibold">0%</span>
+            <span class="text-zinc-500">(<span id="completed-count">0</span>/<span id="total-count">23</span>)</span>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-4">
+          <input
+            type="text"
+            placeholder="모듈 검색... (/, Ctrl+K)"
+            class="search-input"
+            id="module-search"
+          />
+          <a href="/ggp-academy/dashboard.html" class="text-sm text-zinc-400 hover:text-white transition">
+            대시보드 →
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-container">
+      <div id="overall-progress-bar" class="progress-fill" style="width: 0%"></div>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="max-w-6xl mx-auto px-6 pt-32 pb-16">
+    <div id="curriculum-container">
+      <!-- 모든 STEP과 모듈이 여기에 동적으로 생성됨 -->
+    </div>
+  </main>
+
+  <!-- Sidebar: Quick Navigation -->
+  <aside class="sidebar">
+    <div class="text-xs font-semibold text-zinc-400 mb-3 uppercase tracking-wide">
+      Quick Navigation
+    </div>
+    <div id="minimap-container">
+      <!-- 미니맵 아이템 동적 생성 -->
+    </div>
+  </aside>
+
+  <!-- Scripts -->
+  <script type="module">
+    import { CURRICULUM_V2 } from './js/curriculum.js';
+
+    // 전역 상태
+    let progressData = {
+      completed: [],
+      current: null
+    };
+
+    // localStorage에서 진도 불러오기
+    function loadProgress() {
+      const saved = localStorage.getItem('academy_progress');
+      if (saved) {
+        progressData = JSON.parse(saved);
+      } else {
+        // 첫 모듈을 current로 설정
+        progressData.current = '1-1';
+      }
+    }
+
+    // localStorage에 진도 저장
+    function saveProgress() {
+      localStorage.setItem('academy_progress', JSON.stringify(progressData));
+      updateProgressBar();
+    }
+
+    // 진도율 업데이트
+    function updateProgressBar() {
+      const totalModules = CURRICULUM_V2.steps.reduce((sum, step) => sum + step.modules.length, 0);
+      const completedCount = progressData.completed.length;
+      const percentage = Math.round((completedCount / totalModules) * 100);
+
+      document.getElementById('overall-progress-bar').style.width = `${percentage}%`;
+      document.getElementById('overall-progress-text').textContent = `${percentage}%`;
+      document.getElementById('completed-count').textContent = completedCount;
+      document.getElementById('total-count').textContent = totalModules;
+    }
+
+    // 모듈 상태 확인
+    function getModuleState(moduleId) {
+      if (progressData.completed.includes(moduleId)) return 'completed';
+      if (progressData.current === moduleId) return 'active';
+
+      // 이전 모듈이 완료되지 않았으면 locked
+      const allModules = CURRICULUM_V2.steps.flatMap(step => step.modules);
+      const currentIndex = allModules.findIndex(m => m.id === moduleId);
+      if (currentIndex > 0) {
+        const prevModule = allModules[currentIndex - 1];
+        if (!progressData.completed.includes(prevModule.id) && progressData.current !== prevModule.id) {
+          return 'locked';
+        }
+      }
+
+      return 'available';
+    }
+
+    // 마크다운 로드
+    async function loadMarkdown(path) {
+      try {
+        const cleanPath = path.replace(/\.html$/, '').replace(/\.md$/, '');
+        const mdPath = `/ggp-academy/${cleanPath}.md`;
+        const response = await fetch(mdPath);
+
+        if (!response.ok) throw new Error(`Failed to load: ${response.status}`);
+
+        const markdown = await response.text();
+        return marked.parse(markdown);
+      } catch (error) {
+        console.error('Markdown load error:', error);
+        return `<p class="text-red-400">콘텐츠를 불러올 수 없습니다.</p>`;
+      }
+    }
+
+    // 모듈 토글 (펼침/접힘)
+    function toggleModule(moduleId) {
+      const contentEl = document.getElementById(`content-${moduleId}`);
+      const isExpanded = contentEl.classList.contains('expanded');
+
+      if (isExpanded) {
+        contentEl.classList.remove('expanded');
+      } else {
+        // 다른 모든 모듈 접기
+        document.querySelectorAll('.module-content.expanded').forEach(el => {
+          if (el.id !== `content-${moduleId}`) {
+            el.classList.remove('expanded');
+          }
+        });
+
+        contentEl.classList.add('expanded');
+
+        // 콘텐츠 로드 (아직 로드되지 않았으면)
+        if (!contentEl.dataset.loaded) {
+          loadModuleContent(moduleId);
+        }
+      }
+    }
+
+    // 모듈 콘텐츠 로드
+    async function loadModuleContent(moduleId) {
+      const contentEl = document.getElementById(`content-${moduleId}`);
+      const module = CURRICULUM_V2.steps.flatMap(s => s.modules).find(m => m.id === moduleId);
+
+      if (!module) return;
+
+      contentEl.innerHTML = '<div class="text-center py-8 text-zinc-400">로딩 중...</div>';
+
+      const html = await loadMarkdown(module.path);
+      contentEl.innerHTML = html;
+      contentEl.dataset.loaded = 'true';
+
+      // 인터랙티브 모듈 초기화
+      if (window.initInteractiveModule) {
+        window.initInteractiveModule();
+      }
+    }
+
+    // 모듈 완료 처리
+    window.completeModule = function(moduleId) {
+      // 이미 완료된 모듈이면 무시
+      if (progressData.completed.includes(moduleId)) return;
+
+      // 완료 처리
+      progressData.completed.push(moduleId);
+
+      // 다음 모듈 찾기
+      const allModules = CURRICULUM_V2.steps.flatMap(step => step.modules);
+      const currentIndex = allModules.findIndex(m => m.id === moduleId);
+
+      if (currentIndex < allModules.length - 1) {
+        const nextModule = allModules[currentIndex + 1];
+        progressData.current = nextModule.id;
+
+        // 저장
+        saveProgress();
+
+        // UI 업데이트
+        renderCurriculum();
+
+        // 다음 모듈로 스크롤
+        setTimeout(() => {
+          const nextCard = document.getElementById(`module-${nextModule.id}`);
+          if (nextCard) {
+            nextCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            // 자동 펼치기
+            setTimeout(() => {
+              toggleModule(nextModule.id);
+            }, 600);
+          }
+        }, 300);
+      } else {
+        // 모든 모듈 완료!
+        progressData.current = null;
+        saveProgress();
+        renderCurriculum();
+
+        alert('🎉 축하합니다! 모든 모듈을 완료했습니다!');
+      }
+    };
+
+    // 커리큘럼 렌더링
+    function renderCurriculum() {
+      const container = document.getElementById('curriculum-container');
+      const minimap = document.getElementById('minimap-container');
+
+      let html = '';
+      let minimapHtml = '';
+
+      CURRICULUM_V2.steps.forEach((step, stepIndex) => {
+        const completedModules = step.modules.filter(m => progressData.completed.includes(m.id)).length;
+        const totalModules = step.modules.length;
+        const stepProgress = Math.round((completedModules / totalModules) * 100);
+
+        // STEP Header
+        html += `
+          <section class="mb-12" id="step-${step.id}">
+            <div class="step-header px-6 py-4 rounded-t-xl">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                  <div class="text-3xl">${step.icon}</div>
+                  <div>
+                    <div class="text-sm text-zinc-400 font-medium">STEP ${step.number}</div>
+                    <h2 class="text-2xl font-bold">${step.title}</h2>
+                    <p class="text-sm text-zinc-400 mt-1">${step.subtitle}</p>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <div class="text-sm text-zinc-400">진도</div>
+                  <div class="text-2xl font-bold">${completedModules}/${totalModules}</div>
+                  <div class="text-xs text-zinc-500">${stepProgress}%</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="space-y-4 mt-4">
+        `;
+
+        // Minimap - STEP
+        minimapHtml += `
+          <div class="text-xs font-semibold text-zinc-400 mt-4 mb-2">
+            ${step.icon} STEP ${step.number}
+          </div>
+        `;
+
+        // 각 모듈 렌더링
+        step.modules.forEach((module, moduleIndex) => {
+          const state = getModuleState(module.id);
+          const isExpanded = state === 'active';
+
+          let badge = '';
+          let icon = '';
+          let cardClass = 'module-card';
+
+          if (state === 'completed') {
+            badge = '<span class="badge badge-completed">✓ 완료</span>';
+            icon = '✅';
+            cardClass += ' completed';
+          } else if (state === 'active') {
+            badge = '<span class="badge badge-active">📖 학습중</span>';
+            icon = '📖';
+            cardClass += ' active';
+          } else if (state === 'locked') {
+            badge = '<span class="badge badge-locked">🔒 잠김</span>';
+            icon = '🔒';
+            cardClass += ' locked';
+          } else {
+            badge = '<span class="badge badge-locked">○ 대기</span>';
+            icon = '○';
+          }
+
+          html += `
+            <div class="${cardClass} rounded-xl overflow-hidden" id="module-${module.id}">
+              <!-- Module Header (Clickable) -->
+              <div
+                class="module-header px-6 py-4 flex items-center justify-between"
+                onclick="${state !== 'locked' ? `toggleModule('${module.id}')` : ''}"
+              >
+                <div class="flex items-center gap-4 flex-1">
+                  <div class="text-2xl">${icon}</div>
+                  <div class="flex-1">
+                    <div class="flex items-center gap-3 mb-1">
+                      <h3 class="text-lg font-bold">${module.title}</h3>
+                      ${badge}
+                    </div>
+                    <p class="text-sm text-zinc-400">${module.description}</p>
+                    <div class="flex gap-2 mt-2">
+                      <span class="text-xs text-zinc-500">⏱️ ${module.duration}</span>
+                      <span class="text-xs text-zinc-500">•</span>
+                      <span class="text-xs text-zinc-500">${module.topics.slice(0, 3).join(', ')}</span>
+                    </div>
+                  </div>
+                </div>
+
+                ${state !== 'locked' ? `
+                  <div class="text-zinc-400 text-sm">
+                    ${state === 'completed' ? '다시보기 ▼' : state === 'active' ? '펼쳐짐 ▲' : '펼치기 ▼'}
+                  </div>
+                ` : ''}
+              </div>
+
+              <!-- Module Content (Expandable) -->
+              <div
+                id="content-${module.id}"
+                class="module-content ${isExpanded ? 'expanded' : ''}"
+                data-loaded="false"
+              >
+                <div class="px-6 py-8 border-t border-zinc-700">
+                  <!-- 마크다운 콘텐츠가 여기에 로드됨 -->
+                  <div class="text-center py-8 text-zinc-400">콘텐츠를 불러오는 중...</div>
+
+                  ${state !== 'locked' && state !== 'completed' ? `
+                    <div class="mt-8 pt-8 border-t border-zinc-700">
+                      <button
+                        onclick="completeModule('${module.id}')"
+                        class="complete-btn w-full py-4 rounded-xl text-white font-bold text-lg"
+                      >
+                        ✓ 완료하고 다음으로
+                      </button>
+                    </div>
+                  ` : ''}
+                </div>
+              </div>
+            </div>
+          `;
+
+          // Minimap
+          minimapHtml += `
+            <div
+              class="minimap-item ${state}"
+              onclick="document.getElementById('module-${module.id}').scrollIntoView({ behavior: 'smooth', block: 'center' })"
+            >
+              ${icon} ${module.id}. ${module.title}
+            </div>
+          `;
+        });
+
+        html += `
+            </div>
+          </section>
+        `;
+      });
+
+      container.innerHTML = html;
+      minimap.innerHTML = minimapHtml;
+
+      // 현재 활성 모듈 자동 펼치기 및 콘텐츠 로드
+      if (progressData.current) {
+        setTimeout(() => {
+          loadModuleContent(progressData.current);
+
+          // 스크롤 위치 복원
+          const activeModule = document.getElementById(`module-${progressData.current}`);
+          if (activeModule) {
+            activeModule.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }, 500);
+      }
+    }
+
+    // 검색 기능
+    document.getElementById('module-search').addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase();
+      const modules = document.querySelectorAll('.module-card');
+
+      modules.forEach(module => {
+        const text = module.textContent.toLowerCase();
+        if (text.includes(query)) {
+          module.style.display = 'block';
+        } else {
+          module.style.display = 'none';
+        }
+      });
+    });
+
+    // 단축키: / 또는 Ctrl+K로 검색 포커스
+    document.addEventListener('keydown', (e) => {
+      if (e.key === '/' || (e.ctrlKey && e.key === 'k')) {
+        e.preventDefault();
+        document.getElementById('module-search').focus();
+      }
+    });
+
+    // 초기화
+    loadProgress();
+    updateProgressBar();
+    renderCurriculum();
+
+    // 인터랙티브 모듈 스크립트 로드
+    const script = document.createElement('script');
+    script.src = '/ggp-academy/js/module-interactive.js';
+    document.body.appendChild(script);
+  </script>
+
+</body>
+</html>
