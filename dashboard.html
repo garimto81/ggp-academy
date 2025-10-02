@@ -5,92 +5,471 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GGP Academy - Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    * { font-family: 'Inter', sans-serif; }
-    body { background: radial-gradient(circle at 30% 50%, rgba(220,38,38,0.15), transparent 70%), radial-gradient(circle at 70% 70%, rgba(185,28,28,0.1), transparent 60%), #000; }
+    * {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      background: #0a0a0a;
+      background-image:
+        radial-gradient(at 0% 0%, rgba(220, 38, 38, 0.08) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(239, 68, 68, 0.05) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(185, 28, 28, 0.08) 0px, transparent 50%),
+        radial-gradient(at 0% 100%, rgba(220, 38, 38, 0.05) 0px, transparent 50%);
+    }
+
+    /* 스무스 스크롤 */
+    html {
+      scroll-behavior: smooth;
+    }
+
+    /* 커스텀 스크롤바 */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #18181b;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #3f3f46;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #52525b;
+    }
+
+    /* 글래스모피즘 효과 */
+    .glass {
+      background: rgba(24, 24, 27, 0.6);
+      backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(63, 63, 70, 0.4);
+    }
+
+    /* 그라디언트 테두리 */
+    .gradient-border {
+      position: relative;
+      background: #18181b;
+      border-radius: 16px;
+    }
+    .gradient-border::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 16px;
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(220, 38, 38, 0.3), rgba(239, 68, 68, 0.1));
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+
+    /* 호버 애니메이션 */
+    .step-card {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+    }
+    .step-card:hover {
+      transform: translateY(-2px);
+      box-shadow:
+        0 20px 25px -5px rgba(0, 0, 0, 0.3),
+        0 10px 10px -5px rgba(0, 0, 0, 0.2);
+    }
+
+    /* 펼치기/접기 애니메이션 */
+    .step-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .step-content.expanded {
+      max-height: 2000px;
+    }
+
+    /* 프로그레스 바 애니메이션 */
+    .progress-bar {
+      transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    .progress-bar::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.2),
+        transparent
+      );
+      animation: shimmer 2s infinite;
+    }
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    /* 배지 스타일 */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Step별 컬러 */
+    .step-red { --step-color: 220, 38, 38; }
+    .step-blue { --step-color: 37, 99, 235; }
+    .step-purple { --step-color: 147, 51, 234; }
+    .step-green { --step-color: 34, 197, 94; }
+    .step-orange { --step-color: 249, 115, 22; }
+    .step-yellow { --step-color: 234, 179, 8; }
+
+    .step-accent {
+      background: rgba(var(--step-color), 0.1);
+      border-color: rgba(var(--step-color), 0.3);
+    }
+    .step-accent-text {
+      color: rgb(var(--step-color));
+    }
+    .step-progress {
+      background: linear-gradient(90deg,
+        rgba(var(--step-color), 0.8),
+        rgba(var(--step-color), 0.6)
+      );
+    }
+
+    /* 문서 아이템 호버 */
+    .doc-item {
+      transition: all 0.2s ease;
+    }
+    .doc-item:hover {
+      background: rgba(63, 63, 70, 0.3);
+      transform: translateX(4px);
+    }
+
+    /* 스켈레톤 로딩 */
+    .skeleton {
+      background: linear-gradient(
+        90deg,
+        rgba(63, 63, 70, 0.2) 25%,
+        rgba(82, 82, 91, 0.3) 50%,
+        rgba(63, 63, 70, 0.2) 75%
+      );
+      background-size: 200% 100%;
+      animation: loading 1.5s infinite;
+    }
+    @keyframes loading {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* 툴팁 */
+    [data-tooltip] {
+      position: relative;
+    }
+    [data-tooltip]::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%) translateY(-8px);
+      padding: 6px 12px;
+      background: #18181b;
+      border: 1px solid #3f3f46;
+      border-radius: 8px;
+      font-size: 12px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    [data-tooltip]:hover::after {
+      opacity: 1;
+    }
+
+    /* 빠른 액션 버튼 */
+    .quick-action {
+      background: linear-gradient(135deg, rgba(220, 38, 38, 0.2), rgba(239, 68, 68, 0.1));
+      border: 1px solid rgba(220, 38, 38, 0.3);
+      transition: all 0.2s;
+    }
+    .quick-action:hover {
+      background: linear-gradient(135deg, rgba(220, 38, 38, 0.3), rgba(239, 68, 68, 0.2));
+      border-color: rgba(220, 38, 38, 0.5);
+      transform: translateY(-1px);
+    }
   </style>
 </head>
 <body class="text-white min-h-screen">
-  <header class="border-b border-zinc-800 bg-zinc-900/50 backdrop-blur-xl">
-    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-      <div class="flex items-center gap-3">
-        <span class="text-3xl">🎰</span>
-        <div>
-          <h1 class="text-xl font-bold">GGP Academy</h1>
-          <p class="text-sm text-zinc-400">포커 프로덕션 전문가 양성 과정</p>
+
+  <!-- 헤더 -->
+  <header class="glass sticky top-0 z-50 border-b border-zinc-800/50">
+    <div class="max-w-7xl mx-auto px-6 py-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <div class="w-10 h-10 bg-gradient-to-br from-red-600 to-red-700 rounded-xl flex items-center justify-center text-xl shadow-lg">
+            🎰
+          </div>
+          <div>
+            <h1 class="text-lg font-bold tracking-tight">GGP Academy</h1>
+            <p class="text-xs text-zinc-400">포커 프로덕션 전문가 양성 과정</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <button id="quickStart" class="quick-action px-4 py-2 rounded-lg text-sm font-medium hidden">
+            계속 학습하기 →
+          </button>
+          <button id="logout" class="px-4 py-2 bg-zinc-800/50 hover:bg-zinc-700/50 rounded-lg transition text-sm font-medium border border-zinc-700/50">
+            로그아웃
+          </button>
         </div>
       </div>
-      <button id="logout" class="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition">로그아웃</button>
     </div>
   </header>
+
   <main class="max-w-7xl mx-auto px-6 py-8">
-    <section class="mb-8 bg-zinc-900/50 border border-zinc-800 rounded-xl p-6">
-      <h2 class="text-2xl font-bold mb-4">📊 학습 진도</h2>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-        <div class="bg-zinc-800/50 p-4 rounded-lg">
-          <div class="text-sm text-zinc-400">완료한 문서</div>
-          <div id="completed" class="text-3xl font-bold">0 / 0</div>
-        </div>
-        <div class="bg-zinc-800/50 p-4 rounded-lg">
-          <div class="text-sm text-zinc-400">전체 진도율</div>
-          <div id="percent" class="text-3xl font-bold">0%</div>
-        </div>
-        <div class="bg-zinc-800/50 p-4 rounded-lg">
-          <div class="text-sm text-zinc-400">학습 일수</div>
-          <div id="days" class="text-3xl font-bold">0일</div>
-        </div>
+
+    <!-- 환영 메시지 & 통계 -->
+    <section class="mb-8">
+      <div class="mb-6">
+        <h2 class="text-3xl font-bold mb-2">학습 대시보드</h2>
+        <p class="text-zinc-400">포커 프로덕션 전문가로 가는 여정을 시작하세요</p>
       </div>
-      <div class="w-full bg-zinc-800 rounded-full h-4">
-        <div id="bar" class="bg-gradient-to-r from-red-600 to-red-500 h-full rounded-full transition-all duration-500" style="width:0%"></div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <!-- 전체 진도율 -->
+        <div class="gradient-border p-6">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-sm font-medium text-zinc-400">전체 진도</span>
+            <span class="text-2xl">📊</span>
+          </div>
+          <div id="percent" class="text-4xl font-bold mb-2">0%</div>
+          <div class="w-full h-2 bg-zinc-800 rounded-full overflow-hidden">
+            <div id="bar" class="progress-bar h-full bg-gradient-to-r from-red-600 to-red-500 rounded-full" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <!-- 완료한 문서 -->
+        <div class="glass p-6 rounded-2xl">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-sm font-medium text-zinc-400">완료 문서</span>
+            <span class="text-2xl">✅</span>
+          </div>
+          <div id="completed" class="text-4xl font-bold">0 / 0</div>
+        </div>
+
+        <!-- 학습 일수 -->
+        <div class="glass p-6 rounded-2xl">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-sm font-medium text-zinc-400">학습 일수</span>
+            <span class="text-2xl">📅</span>
+          </div>
+          <div id="days" class="text-4xl font-bold">0일</div>
+        </div>
+
+        <!-- 총 학습 시간 -->
+        <div class="glass p-6 rounded-2xl">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-sm font-medium text-zinc-400">총 시간</span>
+            <span class="text-2xl">⏱️</span>
+          </div>
+          <div id="totalTime" class="text-4xl font-bold">0분</div>
+        </div>
       </div>
     </section>
+
+    <!-- 커리큘럼 -->
     <section>
-      <h2 class="text-2xl font-bold mb-4">📚 커리큘럼</h2>
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-2xl font-bold">학습 로드맵</h2>
+        <div class="flex gap-2">
+          <button id="expandAll" class="px-3 py-1.5 text-xs font-medium text-zinc-400 hover:text-white transition">
+            모두 펼치기
+          </button>
+          <button id="collapseAll" class="px-3 py-1.5 text-xs font-medium text-zinc-400 hover:text-white transition">
+            모두 접기
+          </button>
+        </div>
+      </div>
+
       <div id="curriculum" class="space-y-4"></div>
     </section>
+
+    <!-- 푸터 -->
+    <footer class="mt-16 pt-8 border-t border-zinc-800/50 text-center text-sm text-zinc-500">
+      <p>GG Production × Claude Code · v2.0</p>
+    </footer>
   </main>
+
   <script type="module">
     import { requireAuth, logout } from './js/auth.js';
     import { loadProgress, calculateProgressPercentage, getStudyStats, isCompleted } from './js/progress.js';
     import { CURRICULUM_DATA, getTotalDocCount } from './js/curriculum.js';
+
     requireAuth();
+
+    // 로그아웃
     document.getElementById('logout').onclick = logout;
+
+    // 통계 계산
     const stats = getStudyStats();
     const total = getTotalDocCount();
     const progress = calculateProgressPercentage(total);
+
+    // 통계 표시
     document.getElementById('completed').textContent = `${stats.completedDocs} / ${total}`;
     document.getElementById('percent').textContent = `${progress}%`;
     document.getElementById('days').textContent = `${stats.daysStudied}일`;
     document.getElementById('bar').style.width = `${progress}%`;
-    const container = document.getElementById('curriculum');
+
+    // 총 학습 시간 계산 (각 문서 duration 합산)
+    let totalMinutes = 0;
     CURRICULUM_DATA.steps.forEach(step => {
-      const div = document.createElement('div');
-      div.className = 'bg-zinc-900/50 border border-zinc-800 rounded-xl overflow-hidden';
-      div.innerHTML = `
-        <div class="p-4 bg-zinc-800/30 border-b border-zinc-800">
-          <h3 class="text-xl font-bold">${step.icon} ${step.title}</h3>
-        </div>
-        <div>${step.docs.map(d => {
-          const done = isCompleted(d.path);
-          const icon = done ? '✅' : '⬜';
-          const bg = done ? 'bg-green-900/20 border-green-800' : 'bg-zinc-800/30 border-zinc-700';
-          return `<a href="/ggp-academy/viewer.html?doc=${d.path}" class="block p-4 ${bg} border-b last:border-b-0 hover:bg-zinc-700/30 transition">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-3">
-                <span class="text-xl">${icon}</span>
-                <div>
-                  <div class="font-medium">${d.title}</div>
-                  <div class="text-sm text-zinc-400">⏱️ ${d.duration}</div>
+      step.docs.forEach(doc => {
+        const minutes = parseInt(doc.duration.replace('분', ''));
+        if (!isNaN(minutes)) totalMinutes += minutes;
+      });
+    });
+    document.getElementById('totalTime').textContent = `${totalMinutes}분`;
+
+    // Step별 색상 매핑
+    const stepColors = ['red', 'blue', 'purple', 'green', 'orange', 'yellow'];
+
+    // 커리큘럼 렌더링
+    const container = document.getElementById('curriculum');
+
+    CURRICULUM_DATA.steps.forEach((step, index) => {
+      const color = stepColors[index % stepColors.length];
+      const completedDocs = step.docs.filter(d => isCompleted(d.path)).length;
+      const stepProgress = Math.round((completedDocs / step.docs.length) * 100);
+      const isCompleteStep = completedDocs === step.docs.length;
+
+      const stepCard = document.createElement('div');
+      stepCard.className = `step-card step-${color} glass rounded-2xl overflow-hidden`;
+
+      stepCard.innerHTML = `
+        <!-- Step 헤더 -->
+        <div class="step-header p-6 cursor-pointer select-none" data-step="${step.id}">
+          <div class="flex items-start justify-between mb-4">
+            <div class="flex items-start gap-4 flex-1">
+              <div class="w-14 h-14 step-accent rounded-xl flex items-center justify-center text-3xl flex-shrink-0">
+                ${step.icon}
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-3 mb-2">
+                  <h3 class="text-xl font-bold">${step.title}</h3>
+                  ${isCompleteStep ? '<span class="badge bg-green-900/30 text-green-400 border border-green-800/50">완료</span>' : ''}
+                </div>
+                <p class="text-sm text-zinc-400 mb-3">${step.docs.length}개 문서 · 예상 시간 ${step.docs.reduce((sum, d) => sum + parseInt(d.duration.replace('분', '')), 0)}분</p>
+
+                <!-- 프로그레스 바 -->
+                <div class="flex items-center gap-3">
+                  <div class="flex-1 h-2 bg-zinc-800 rounded-full overflow-hidden">
+                    <div class="step-progress h-full rounded-full transition-all duration-1000" style="width: ${stepProgress}%"></div>
+                  </div>
+                  <span class="text-sm font-semibold step-accent-text">${stepProgress}%</span>
                 </div>
               </div>
-              <span class="text-zinc-400">→</span>
             </div>
-          </a>`;
-        }).join('')}</div>
+
+            <button class="expand-btn w-8 h-8 flex items-center justify-center rounded-lg hover:bg-zinc-800/50 transition ml-4 flex-shrink-0">
+              <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 콘텐츠 (문서 목록) -->
+        <div class="step-content">
+          <div class="px-6 pb-6 space-y-2">
+            ${step.docs.map((doc, docIndex) => {
+              const done = isCompleted(doc.path);
+              return `
+                <a href="/ggp-academy/viewer.html?doc=${doc.path}"
+                   class="doc-item flex items-center gap-4 p-4 rounded-xl border border-zinc-800/50 hover:border-zinc-700/50 group">
+                  <div class="flex items-center gap-3 flex-1 min-w-0">
+                    <div class="flex-shrink-0 w-8 h-8 rounded-lg ${done ? 'bg-green-900/30 text-green-400 border border-green-800/50' : 'bg-zinc-800/50 text-zinc-500 border border-zinc-700/50'} flex items-center justify-center text-sm font-semibold">
+                      ${done ? '✓' : (docIndex + 1)}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <div class="font-medium mb-0.5 ${done ? 'text-zinc-300' : 'text-white'}">${doc.title}</div>
+                      <div class="text-xs text-zinc-500">${doc.duration} · ${doc.description || ''}</div>
+                    </div>
+                  </div>
+                  <div class="flex-shrink-0 text-zinc-600 group-hover:text-zinc-400 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                  </div>
+                </a>
+              `;
+            }).join('')}
+          </div>
+        </div>
       `;
-      container.appendChild(div);
+
+      container.appendChild(stepCard);
     });
+
+    // 펼치기/접기 기능
+    document.querySelectorAll('.step-header').forEach(header => {
+      header.addEventListener('click', (e) => {
+        const content = header.nextElementSibling;
+        const btn = header.querySelector('.expand-btn svg');
+
+        content.classList.toggle('expanded');
+        btn.classList.toggle('rotate-180');
+      });
+    });
+
+    // 모두 펼치기/접기
+    document.getElementById('expandAll').addEventListener('click', () => {
+      document.querySelectorAll('.step-content').forEach(content => {
+        content.classList.add('expanded');
+        content.previousElementSibling.querySelector('.expand-btn svg').classList.add('rotate-180');
+      });
+    });
+
+    document.getElementById('collapseAll').addEventListener('click', () => {
+      document.querySelectorAll('.step-content').forEach(content => {
+        content.classList.remove('expanded');
+        content.previousElementSibling.querySelector('.expand-btn svg').classList.remove('rotate-180');
+      });
+    });
+
+    // 빠른 시작 버튼 (마지막 학습 문서로 이동)
+    const lastVisited = localStorage.getItem('ggp_last_visited');
+    if (lastVisited) {
+      const quickStartBtn = document.getElementById('quickStart');
+      quickStartBtn.classList.remove('hidden');
+      quickStartBtn.onclick = () => {
+        window.location.href = `/ggp-academy/viewer.html?doc=${lastVisited}`;
+      };
+    }
+
+    // 첫 Step 자동 펼치기
+    setTimeout(() => {
+      const firstStep = document.querySelector('.step-content');
+      if (firstStep) {
+        firstStep.classList.add('expanded');
+        firstStep.previousElementSibling.querySelector('.expand-btn svg').classList.add('rotate-180');
+      }
+    }, 300);
   </script>
 </body>
 </html>
