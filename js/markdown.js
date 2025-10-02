@@ -17,12 +17,19 @@ async function loadAndRenderMarkdown(docPath, targetElementId) {
     return;
   }
 
+  // HTML 파일인지 확인
+  if (docPath.endsWith(".html")) {
+    // HTML 파일은 전체 페이지 리다이렉트
+    window.location.href = `/ggp-academy/${docPath}`;
+    return;
+  }
+
   // 로딩 표시
   targetElement.innerHTML = '<div class="loading">문서를 불러오는 중...</div>';
 
   try {
     // 마크다운 파일 경로 생성
-    const filePath = `/curriculum/docs/${docPath}.md`;
+    const filePath = `/ggp-academy/${docPath}.md`;
 
     // 파일 fetch
     const response = await fetch(filePath);
