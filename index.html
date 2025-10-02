@@ -62,7 +62,7 @@
       if (login(pw)) {
         btn.innerHTML = '✓ 입장 승인';
         await new Promise(r => setTimeout(r, 300));
-        location.href = '/dashboard.html';
+        location.href = '/ggp-academy/dashboard.html';
       } else {
         showError('잘못된 코드입니다');
         input.value = '';

@@ -40,7 +40,7 @@ function login(password) {
  */
 function logout() {
   localStorage.removeItem(AUTH_CONFIG.STORAGE_KEY);
-  window.location.href = '/index.html';
+  window.location.href = '/ggp-academy/index.html';
 }
 
 /**
@@ -77,7 +77,7 @@ function isAuthenticated() {
  */
 function requireAuth() {
   if (!isAuthenticated()) {
-    window.location.href = '/index.html';
+    window.location.href = '/ggp-academy/index.html';
   }
 }
 
@@ -86,7 +86,7 @@ function requireAuth() {
  */
 function redirectIfAuthenticated() {
   if (isAuthenticated()) {
-    window.location.href = '/dashboard.html';
+    window.location.href = '/ggp-academy/dashboard.html';
   }
 }
 
