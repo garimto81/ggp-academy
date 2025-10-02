@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GGP Academy - Module Viewer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      font-family: 'Inter', sans-serif;
+      scroll-behavior: smooth;
+    }
+    body {
+      background: radial-gradient(circle at 30% 50%, rgba(220,38,38,0.15), transparent 70%),
+                  radial-gradient(circle at 70% 70%, rgba(185,28,28,0.1), transparent 60%),
+                  #000;
+    }
+
+    /* Progress Bar Animation */
+    .progress-fill {
+      transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Step Content Animation */
+    .step-content {
+      animation: fadeInUp 0.5s ease-out;
+    }
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Card Hover Effect */
+    .card-hover {
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .card-hover:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(220, 38, 38, 0.3);
+    }
+
+    /* Glassmorphism */
+    .glass {
+      background: rgba(24, 24, 27, 0.6);
+      backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(63, 63, 70, 0.4);
+    }
+
+    /* Step Dots */
+    .step-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      transition: all 0.3s ease;
+    }
+    .step-dot.active {
+      width: 32px;
+      border-radius: 6px;
+    }
+
+    /* Markdown Content Styling */
+    #markdown-content h1 { @apply text-4xl font-bold mb-4 mt-8; }
+    #markdown-content h2 { @apply text-3xl font-bold mb-3 mt-6; }
+    #markdown-content h3 { @apply text-2xl font-bold mb-2 mt-4; }
+    #markdown-content p { @apply mb-4 leading-relaxed; }
+    #markdown-content ul { @apply list-disc list-inside mb-4 space-y-2; }
+    #markdown-content ol { @apply list-decimal list-inside mb-4 space-y-2; }
+    #markdown-content code { @apply bg-zinc-800 px-2 py-1 rounded text-sm; }
+    #markdown-content pre { @apply bg-zinc-900 p-4 rounded-lg overflow-x-auto mb-4; }
+    #markdown-content blockquote { @apply border-l-4 border-red-600 pl-4 italic text-zinc-400 my-4; }
+    #markdown-content strong { @apply font-bold text-white; }
+    #markdown-content em { @apply italic; }
+  </style>
+</head>
+<body class="text-white min-h-screen">
+
+  <!-- Sticky Progress Header -->
+  <div class="sticky top-0 z-50 glass">
+    <div class="max-w-4xl mx-auto px-6 py-4">
+      <!-- Top Navigation -->
+      <div class="flex items-center justify-between mb-3">
+        <a href="/ggp-academy/dashboard.html" class="text-zinc-400 hover:text-white transition">
+          ← 대시보드
+        </a>
+        <div class="text-sm text-zinc-400">
+          <span id="currentStepNum">1</span> / <span id="totalStepsNum">1</span>
+        </div>
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="w-full bg-zinc-800 rounded-full h-2 overflow-hidden">
+        <div id="progressBar" class="progress-fill h-full bg-gradient-to-r from-red-600 to-red-500" style="width: 0%"></div>
+      </div>
+
+      <!-- Step Dots -->
+      <div id="stepDots" class="flex items-center justify-center gap-2 mt-4">
+        <!-- Dynamically generated -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Area -->
+  <div class="max-w-4xl mx-auto px-6 py-8">
+    <div class="glass rounded-2xl p-10 mb-8">
+      <!-- Module Header -->
+      <div id="moduleHeader" class="flex items-center gap-3 mb-4">
+        <div id="stepIcon" class="w-12 h-12 bg-gradient-to-br from-red-600 to-red-800 rounded-xl flex items-center justify-center text-2xl">
+          📚
+        </div>
+        <div>
+          <div class="text-sm text-zinc-400">
+            <span id="stepLabel">Loading...</span>
+          </div>
+          <h1 id="stepTitle" class="text-3xl font-bold">Loading module...</h1>
+        </div>
+      </div>
+
+      <!-- Step Time Estimate -->
+      <div id="stepTime" class="text-zinc-400 mb-6">Loading...</div>
+
+      <!-- Markdown Content -->
+      <div id="markdown-content" class="prose prose-invert max-w-none">
+        <div class="text-center py-12 text-zinc-400">
+          <div class="text-4xl mb-4">⏳</div>
+          <div>콘텐츠를 불러오는 중...</div>
+        </div>
+      </div>
+
+      <!-- Navigation Buttons -->
+      <div class="flex justify-between items-center mt-8">
+        <button
+          id="prevBtn"
+          onclick="prevStep()"
+          class="px-6 py-3 bg-zinc-800 rounded-xl font-bold hover:bg-zinc-700 transition hidden">
+          ← 이전
+        </button>
+
+        <div class="text-sm text-zinc-500">
+          <span id="navStepNum">1</span> / <span id="navTotalSteps">1</span>
+        </div>
+
+        <button
+          id="nextBtn"
+          onclick="nextStep()"
+          class="px-8 py-3 bg-gradient-to-r from-red-600 to-red-700 rounded-xl font-bold hover:from-red-500 hover:to-red-600 transition">
+          다음 →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script type="module">
+    import { getModuleByPathV2 } from './js/curriculum.js';
+
+    // Will be replaced with step-by-step.js
+    window.getModuleByPathV2 = getModuleByPathV2;
+  </script>
+  <script src="/ggp-academy/js/step-by-step.js"></script>
+</body>
+</html>

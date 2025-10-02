@@ -400,7 +400,7 @@
             ${step.docs.map((doc, docIndex) => {
               const done = isCompleted(doc.path);
               return `
-                <a href="/ggp-academy/viewer.html?doc=${doc.path}"
+                <a href="/ggp-academy/module-viewer.html?module=${doc.path}"
                    class="doc-item flex items-center gap-4 p-4 rounded-xl border border-zinc-800/50 hover:border-zinc-700/50 group">
                   <div class="flex items-center gap-3 flex-1 min-w-0">
                     <div class="flex-shrink-0 w-8 h-8 rounded-lg ${done ? 'bg-green-900/30 text-green-400 border border-green-800/50' : 'bg-zinc-800/50 text-zinc-500 border border-zinc-700/50'} flex items-center justify-center text-sm font-semibold">
@@ -458,7 +458,7 @@
       const quickStartBtn = document.getElementById('quickStart');
       quickStartBtn.classList.remove('hidden');
       quickStartBtn.onclick = () => {
-        window.location.href = `/ggp-academy/viewer.html?doc=${lastVisited}`;
+        window.location.href = `/ggp-academy/module-viewer.html?module=${lastVisited}`;
       };
     }
 
