@@ -1,0 +1,74 @@
+{
+  "current": "2.0.0",
+  "released": "2025-10-02",
+  "versions": [
+    {
+      "version": "2.0.0",
+      "name": "Single-Scroll Learning Experience",
+      "released": "2025-10-02",
+      "type": "major",
+      "highlights": [
+        "단일 스크롤 학습 경험 (팝업 제거)",
+        "Layer 1 Instant Check Quiz 시스템",
+        "자동 진도 저장 및 복원",
+        "모듈 검색 기능"
+      ],
+      "breaking": [
+        "module-viewer.html deprecated",
+        "팝업 기반 UI 완전 제거"
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "name": "Initial Release",
+      "released": "2025-09-28",
+      "type": "major",
+      "highlights": [
+        "대시보드 기반 커리큘럼 뷰어",
+        "팝업 모달 학습 시스템",
+        "기본 진도 추적"
+      ]
+    }
+  ],
+  "roadmap": [
+    {
+      "version": "2.1.0",
+      "name": "Question Bank & Smart Assessment",
+      "status": "in_progress",
+      "eta": "2025-10-03",
+      "features": [
+        "랜덤 문제 출제 (Question Bank)",
+        "스마트 평가 시스템",
+        "오답 노트 자동 생성",
+        "학습 통계 대시보드"
+      ]
+    },
+    {
+      "version": "2.2.0",
+      "name": "Adaptive Learning",
+      "status": "planned",
+      "eta": "2025-10-10",
+      "features": [
+        "적응형 난이도 조절",
+        "AI 추천 학습 경로",
+        "배지/업적 시스템"
+      ]
+    },
+    {
+      "version": "3.0.0",
+      "name": "Collaborative Learning",
+      "status": "planned",
+      "eta": "2025-10-20",
+      "features": [
+        "리더보드",
+        "동료 비교",
+        "팀 학습 모드"
+      ]
+    }
+  ],
+  "links": {
+    "github": "https://github.com/your-org/ggp-academy",
+    "changelog": "/ggp-academy/CHANGELOG.md",
+    "docs": "/ggp-academy/docs"
+  }
+}

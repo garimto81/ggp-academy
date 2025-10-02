@@ -1,0 +1,28 @@
+--- a/academy.html
++++ b/academy.html
+@@ -222,6 +222,7 @@
+       <div class="flex items-center justify-between mb-2">
+         <div class="flex items-center gap-4">
+           <h1 class="text-xl font-bold">🎓 GGP Academy</h1>
++          <div id="version-badge-container"></div>
+           <div class="text-sm text-zinc-400">
+             전체 진도: <span id="overall-progress-text" class="text-white font-semibold">0%</span>
+             <span class="text-zinc-500">(<span id="completed-count">0</span>/<span id="total-count">23</span>)</span>
+@@ -422,6 +423,16 @@
+     const quizSystemScript = document.createElement("script");
+     quizSystemScript.src = "/ggp-academy/js/quiz-system.js";
+     document.body.appendChild(quizSystemScript);
++
++    // Version Manager
++    const versionScript = document.createElement("script");
++    versionScript.src = "/ggp-academy/js/version-manager.js";
++    document.body.appendChild(versionScript);
++    versionScript.onload = () => {
++      setTimeout(() => {
++        document.getElementById("version-badge-container").innerHTML = window.versionManager.renderVersionBadge();
++      }, 500);
++    };
++
+     const script = document.createElement('script');
+     script.src = '/ggp-academy/js/module-interactive.js';
+     document.body.appendChild(script);
