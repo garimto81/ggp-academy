@@ -367,3 +367,60 @@ export {
   getStepModuleCountV2,
   getStepProgressV2
 };
+
+// Compatibility exports for v1.0 HTML files
+export const CURRICULUM_DATA = {
+  steps: CURRICULUM_V2.steps.map(step => ({
+    id: step.id,
+    title: step.title,
+    icon: step.icon,
+    color: step.color,
+    docs: step.modules.map(module => ({
+      id: module.id,
+      title: module.title,
+      path: module.path,
+      duration: module.duration,
+      description: module.description
+    }))
+  }))
+};
+
+export function getTotalDocCount() {
+  return getTotalModuleCountV2();
+}
+
+export function getDocByPath(path) {
+  const module = getModuleByPathV2(path);
+  if (!module) return null;
+
+  return {
+    id: module.id,
+    title: module.title,
+    path: module.path,
+    duration: module.duration,
+    stepTitle: module.stepTitle,
+    stepIcon: module.stepIcon
+  };
+}
+
+export function getNextDoc(moduleId) {
+  const module = getNextModuleV2(moduleId);
+  if (!module) return null;
+
+  return {
+    id: module.id,
+    title: module.title,
+    path: module.path
+  };
+}
+
+export function getPrevDoc(moduleId) {
+  const module = getPrevModuleV2(moduleId);
+  if (!module) return null;
+
+  return {
+    id: module.id,
+    title: module.title,
+    path: module.path
+  };
+}
